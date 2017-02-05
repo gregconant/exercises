@@ -1,7 +1,17 @@
 module.exports = function(functionToRun, threshold) {
-    var calledWithinThreshold = false;
+    // declare these up here because they have
+    // to be shared across all calls to debounce
+
+    var calledWithinThreshold = false,
+    context,
+    args;
 
     return function() {
+        // save context and args
+        // from most recent time debounce is called
+        context = this,
+        args = arguments;
+
         if(!calledWithinThreshold) {
             calledWithinThreshold = true;
             setTimeout(function() {
@@ -9,7 +19,9 @@ module.exports = function(functionToRun, threshold) {
                 // reset the "called" flag so it will
                 // execute the next time you call debounce
                 calledWithinThreshold = false;
-                functionToRun();
+                // call the callback, passing in the "this"
+                // and arguments from the last time debounce was called
+                functionToRun.apply(context, args);
             }, threshold);
         }
     }
